@@ -5,15 +5,28 @@ import com.ApiRestProject.Interface.FibonacciInterface;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
-@SuppressWarnings("all")
 public class FibonacciService implements FibonacciInterface {
 
-    private static final Map<String, Integer> CLIENT_ITERATION = new HashMap<String, Integer>();
-    private static final Map<Integer, Integer> ITERATION_FIBO_NUMBER = new HashMap<Integer, Integer>();
+    private static final Map<String, Integer> CLIENT_ITERATION = new ConcurrentHashMap<>();
+    private static final Map<Integer, Integer> ITERATION_FIBO_NUMBER = new ConcurrentHashMap<Integer, Integer>();
 
     public int generate(String client) {
+
+        if (!CLIENT_ITERATION.containsKey(client)) {
+            CLIENT_ITERATION.computeIfAbsent(client, (k) -> 1);
+        }else{
+            CLIENT_ITERATION.compute(client, (k, currenIteration) -> currenIteration + 1);
+        }
+
+        return getFibonacciNumber(CLIENT_ITERATION.get(client));
+
+
+        /* my second option
 
         if (!CLIENT_ITERATION.containsKey(client)) {
             init(client);
@@ -21,7 +34,7 @@ public class FibonacciService implements FibonacciInterface {
             CLIENT_ITERATION.put(client,CLIENT_ITERATION.get(client) + 1);
         }
 
-        return getFibonacciNumber(CLIENT_ITERATION.get(client));
+        return getFibonacciNumber(CLIENT_ITERATION.get(client));*/
     }
 
     public Integer getCurrentIteration(String client) {
@@ -30,7 +43,16 @@ public class FibonacciService implements FibonacciInterface {
 
     public List<Integer> getFiboList(String client) {
 
-        final List<Integer> fiboList = new ArrayList<Integer>();
+        return IntStream.range(1, getCurrentIteration(client) + 1)
+                .mapToObj(this::getFibonacciNumber)
+                .collect(Collectors.toList());
+
+
+       /*
+
+       my option
+
+       final List<Integer> fiboList = new ArrayList<Integer>();
 
         final int currentIteration = getCurrentIteration(client);
 
@@ -39,16 +61,32 @@ public class FibonacciService implements FibonacciInterface {
         }
 
         return fiboList;
+
+        */
     }
 
-    private int getFibonacciNumber(int n) {
+
+
+    static {
+        ITERATION_FIBO_NUMBER.put(1,1);
+        ITERATION_FIBO_NUMBER.put(2,1);
+    }
+
+    private int getFibonacciNumber(int iteration) {
+
+        return ITERATION_FIBO_NUMBER.computeIfAbsent(iteration, (k)
+                -> ITERATION_FIBO_NUMBER.get(iteration - 1) + ITERATION_FIBO_NUMBER.get(iteration - 2));
+
+
+       /*
+        my second option
 
         if (n <= 2) {
             return 1;
-        }
+        }*/
 
         // Memoization Tabulare - save time and memory for getFiboList
-        if (!ITERATION_FIBO_NUMBER.containsKey(n)) {
+       /* if (!ITERATION_FIBO_NUMBER.containsKey(n)) {
 
             int fiboToReturn = 0;
 
@@ -61,11 +99,12 @@ public class FibonacciService implements FibonacciInterface {
                 fibo2 = fiboToReturn;
             }
 
+            System.out.println("currentIteration: " + n);
             ITERATION_FIBO_NUMBER.put(n, fiboToReturn);
 
-        }
+        }*/
 
-        return ITERATION_FIBO_NUMBER.get(n);
+       /* return ITERATION_FIBO_NUMBER.get(n);*/
     }
 
     private void init(String client) {

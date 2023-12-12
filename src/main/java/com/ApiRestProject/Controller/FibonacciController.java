@@ -13,7 +13,6 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api")
-@SuppressWarnings("all")
 public class FibonacciController {
     private final FibonacciService fibonacciService;
     private final FibonacciValidator fibonacciValidator;

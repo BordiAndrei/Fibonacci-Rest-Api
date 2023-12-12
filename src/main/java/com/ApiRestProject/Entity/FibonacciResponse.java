@@ -20,13 +20,21 @@ public class FibonacciResponse {
 
     public FibonacciResponse(String client, int previousIteration) {
         final StringBuilder sb = new StringBuilder(client);
-        sb.append(ARROW).append("apel pas inapoi ").append(previousIteration).append(ARROW).append("rezultat: OK");
+        sb.append(ARROW)
+                .append("apel pas inapoi ")
+                .append(previousIteration)
+                .append(ARROW)
+                .append("rezultat: OK");
         this.response = sb.toString();
     }
 
     public FibonacciResponse(String client, List<Integer> fiboList) {
         final StringBuilder sb = new StringBuilder(client);
-        sb.append(ARROW).append("apel listare valori generate").append(ARROW).append("rezultat: ").append(fiboList.toString());
+        sb.append(ARROW)
+                .append("apel listare valori generate")
+                .append(ARROW)
+                .append("rezultat: ")
+                .append(fiboList.toString());
         this.response = sb.toString();
     }
 
